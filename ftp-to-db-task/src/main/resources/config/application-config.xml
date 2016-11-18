@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <description><![CDATA[
+    This is the application context for File Download
+   ]]></description>
+
+    <import resource="classpath:/config/inbound-integration-config.xml" />
+    <import resource="classpath:/config/beans-config.xml" />
+    <import resource="classpath:/config/db-writer-beans-config.xml" />
+    
+</beans>
+

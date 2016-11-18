@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-file="http://www.springframework.org/schema/integration/file"
+	xmlns:sftp="http://www.springframework.org/schema/integration/sftp"
+	xmlns:ftp="http://www.springframework.org/schema/integration/ftp"
+	xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration/ftp http://www.springframework.org/schema/integration/ftp/spring-integration-ftp.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/integration/file http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+		http://www.springframework.org/schema/integration/stream http://www.springframework.org/schema/integration/stream/spring-integration-stream.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/sftp http://www.springframework.org/schema/integration/sftp/spring-integration-sftp.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+	<int:wire-tap channel="logger" pattern="cic*" />
+
+	<int:logging-channel-adapter id="logger" level="INFO" log-full-message="true" />
+
+	<int:gateway id="cic.file.download.gateway" service-interface="com.emc.it.util.FTPDownloadGateway"
+		default-request-channel="cic.file.downloadgateway.request.channel"
+		default-reply-channel="cic.file.downloadgateway.response.channel">
+	</int:gateway>
+
+	<int:channel id="cic.file.downloadgateway.request.channel" />
+	<int:channel id="cic.file.downloadgateway.response.channel" />
+	<int:channel id="cic.file.to.listfile.channel" />
+	
+	<int:bridge input-channel="cic.file.downloadgateway.request.channel" output-channel="cic.file.to.listfile.channel" />
+	
+	<ftp:outbound-gateway id="cic.ftp.inbound.list.messageGateway"
+		session-factory="ftpSessionFactory" request-channel="cic.file.to.listfile.channel"
+		 command="get" command-options="-a" expression="'/user.csv'"
+		 local-directory="${ftp.inbound.local.directory}"
+		 reply-channel="cic.file.downloadgateway.response.channel" />
+
+
+</beans>
